@@ -85,7 +85,7 @@ public class ActionsListener implements ActionListener {
             if (response == JFileChooser.APPROVE_OPTION){
                 File headerFile = fileChooser.getSelectedFile();
                 Path headerPath = Paths.get(headerFile.getAbsolutePath());
-
+            System.out.println("Controller.ActionsListener.loadFile: File Loaded");
                 ArrayList<Header> headers = new ArrayList<>();
                 List<String> allHeaders = Files.readAllLines(headerPath);
                 
@@ -102,6 +102,7 @@ public class ActionsListener implements ActionListener {
                    headers.add(header);
                 }   
             appFrame.setHeaderArrayList(headers);
+            System.out.println("Load Header: " + allHeaders);
             
             JOptionPane.showMessageDialog(appFrame, "Select Location for Lines file Loading.","Load Lines", JOptionPane.INFORMATION_MESSAGE);
             response = fileChooser.showOpenDialog(appFrame);
@@ -132,7 +133,7 @@ public class ActionsListener implements ActionListener {
                     header.getLines().add(line); 
                 }            
                 appFrame.setItemsArrayList(items);
-
+                System.out.println("Load Lines: " + allLines);
             }
                 HeaderTable headerTable = new HeaderTable(headers);
                 appFrame.setHeaderTable(headerTable);
@@ -146,6 +147,7 @@ public class ActionsListener implements ActionListener {
                 JOptionPane.showMessageDialog(appFrame, "Could not open this file \n Not correctly formatted.", "Invalid File", JOptionPane.ERROR_MESSAGE);
                 appFrame.getInvoiceItemsTable().removeAll();
             }
+        
         }
     private void saveFile() {
         JOptionPane.showMessageDialog(appFrame, "Select location for Headers file saving.","Save Headers", JOptionPane.INFORMATION_MESSAGE);
@@ -185,12 +187,16 @@ public class ActionsListener implements ActionListener {
             if (headersArrayList == null) {
                 throw new Exception();
             }
+            System.out.println("Saved Header: " + headers);
+            System.out.println("Saved Lines: " + lines);
          }      
         }catch (IOException exception) {
             JOptionPane.showMessageDialog(appFrame, "Could not save this File!", "Invalid File", JOptionPane.ERROR_MESSAGE);
         } catch (Exception exception){
             JOptionPane.showMessageDialog(appFrame, "Nothing to save! \n New files were added. \n Please load it to continue", "No Data", JOptionPane.ERROR_MESSAGE);
         }
+        
+        System.out.println("Controller.ActionsListener.saveFile: File Saved");
     }
 
     private void createNewInvoice() {
@@ -208,6 +214,7 @@ public class ActionsListener implements ActionListener {
            JOptionPane.showMessageDialog(appFrame,"Please select Headers & Lines files!", "Files Were Not Selected", JOptionPane.ERROR_MESSAGE);
            createNewInvoice.setVisible(false);
      }
+       System.out.println("Controller.ActionsListener.createNewInvoice: Invoice Creation");
     }  
     
     private void createInvoice() {
@@ -233,12 +240,14 @@ public class ActionsListener implements ActionListener {
        appFrame.getHeaderTable().fireTableDataChanged();
        createNewInvoice.dispose();
        createNewInvoice = null;
-       }   
+       }
+       System.out.println("Controller.ActionsListener.createInvoice: Invoice Created");
     }
 
     private void cancelInvoice() {
         createNewInvoice.dispose();
         createNewInvoice = null;
+        System.out.println("Controller.ActionsListener.cancelInvoice: Invoice Creation Canceled");
     }
     
         
@@ -253,11 +262,22 @@ public class ActionsListener implements ActionListener {
             appFrame.getInvoiceDateValueLabel().setText("");
             appFrame.getInvoiceTotalValueLabel().setText("");
         }
+           System.out.println("Controller.ActionsListener.deleteInvoice: Invoice Deleted");
     }
     private void createNewLine() {
+        int selectedInvoice = appFrame.getInvoicesTable().getSelectedRow();
+        try {
+        if (selectedInvoice != -1){
         createNewLine = new CreateNewLine(appFrame);
-        createNewLine.setVisible(true);    
-    }
+        createNewLine.setVisible(true);
+        } else {
+            createNewLine.setVisible(false);
+        } 
+        System.out.println("Controller.ActionsListener.createNewLine: Line Creation");
+        } catch (NullPointerException exception){
+            JOptionPane.showMessageDialog(appFrame, "Please select an invoice header.", "No Invoice Header", JOptionPane.ERROR_MESSAGE);
+    }     
+}
     
     private void createLine() {
         createNewLine.setVisible(false);
@@ -287,11 +307,13 @@ public class ActionsListener implements ActionListener {
             createNewLine.dispose();
             createNewLine = null;
         }
+       System.out.println("Controller.ActionsListener.createLine: Line Created");
     }
 
     private void cancelLine() {
         createNewLine.dispose();
         createNewLine = null;
+        System.out.println("Controller.ActionsListener.cancelLine: Line Creation Canceled");
     }
     
     private void deleteLine() {
@@ -303,5 +325,6 @@ public class ActionsListener implements ActionListener {
             appFrame.getInvoicesTable().setRowSelectionInterval(selectedInvoice, selectedInvoice);
             appFrame.getItemsTable().fireTableDataChanged();
         }
+           System.out.println("Controller.ActionsListener.deleteLine: Line Deleted");
     }
 }
